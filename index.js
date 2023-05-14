@@ -41,6 +41,20 @@ function init() {
                     displayEmployees();
 
                     break;
+                case "Add Department":
+                    
+                    addDepartment();
+
+                    break;
+                case "Add Role":
+
+                    break;
+                case "Add Employee":
+                    console.log("hello")
+                    break;
+                case "Update Employee Role":
+                    console.log("hello")
+                    break;
                 case "Quit":
                     process.exit();
             }
@@ -80,4 +94,23 @@ function displayEmployees() {
         console.log("\n");
         init();
     });
+}
+
+function addDepartment() {
+    inquirer
+        .prompt(
+            {
+                type: 'input',
+                name: 'department',
+                message: 'What is the name of the department?'
+            })
+        .then((answer) => {
+            db.query(`INSERT INTO departments (department_name) VALUES (?)`, answer.department, function (err, result) {
+                if (err) {
+                    console.log(err);
+                }
+                console.log(`Added ${answer.department} to the database`);
+                displayDepartments();
+            })
+        });
 }
