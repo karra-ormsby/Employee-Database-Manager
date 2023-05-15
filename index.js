@@ -97,8 +97,8 @@ function init() {
                                     }
                                 }
                             
-                                const sql = "INSERT INTO customers (job_title, salary, department_id) VALUES ?";
-                                const values = [answer.role, Number(answer.salary), departmentId];
+                                const sql = "INSERT INTO roles (job_title, department_id, salary) VALUES ?";
+                                const values = [answer.role, departmentId, Number(answer.salary)];
                                 db.query(sql, [values], function(err, result) {
                                     if (err) {
                                         console.log(err);
