@@ -97,9 +97,14 @@ function init() {
                                     }
                                 }
                             
-                                const sql = "INSERT INTO roles (job_title, department_id, salary) VALUES ?";
+                                // const sql = "INSERT INTO roles (job_title, department_id, salary) VALUES ?";
+                                // const values = [answer.role, departmentId, Number(answer.salary)];
+                                const sql = "INSERT INTO roles (job_title, department_id, salary) VALUES (?, ?, ?)";
                                 const values = [answer.role, departmentId, Number(answer.salary)];
-                                db.query(sql, [values], function(err, result) {
+                                console.log([values])
+                                console.log(answer)
+                                console.log(values)
+                                db.query(sql, values, function(err, result) {
                                     if (err) {
                                         console.log(err);
                                     }
