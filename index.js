@@ -48,6 +48,66 @@ function init() {
                     break;
                 case "Add Role":
 
+                    let departmentArray = [];
+                    let departmetnResults;
+  
+                    db.query(`SELECT department_name FROM departments`, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        for (let i = 0; i < result.length; i++) {
+                            departmentArray.push(result[i].department_name);
+                        }
+                    });
+                    
+                    const questions = [
+                        {
+                            type: 'input',
+                            name: 'role',
+                            message: 'What is the name of the role?'
+                        },
+                        {
+                            type: 'input',
+                            name: 'salary',
+                            message: 'What is the salary of the role?'
+                        },
+                        {
+                            type: 'list',
+                            message: 'What department does the role beong to?',
+                            name: 'department',
+                            choices: departmentArray
+                        }
+                    ];
+
+
+                    inquirer
+                        .prompt(questions)
+                        .then((answer) => {
+                            let departmentId;
+
+                            db.query(`SELECT * FROM departments`, function (err, result) {
+                                if (err) {
+                                    console.log(err);
+                                }
+
+                                for (let i = 0; i < result.length; i++) {
+                                    if (answer.department === result[i].department_name) {
+                                        departmentId = result[i].id;
+                                    }
+                                }
+                            
+                                const sql = "INSERT INTO customers (job_title, salary, department_id) VALUES ?";
+                                const values = [answer.role, Number(answer.salary), departmentId];
+                                db.query(sql, [values], function(err, result) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    console.log(`Added ${answer.role} to the database`);
+                                    displayRoles();
+                                })
+                            });
+                        });
                     break;
                 case "Add Employee":
                     console.log("hello")
