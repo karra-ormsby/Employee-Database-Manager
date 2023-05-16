@@ -87,7 +87,7 @@ function addRole() {
 
 function addEmployee() {
     let roleArray = [];
-    let managerArray = [];
+    let employeeArray = [];
 
     db.query(`SELECT job_title FROM roles`, function (err, result) {
         if (err) {
@@ -99,14 +99,15 @@ function addEmployee() {
         }
     });
 
-    db.query(`SELECT reporting_manager FROM employees`, function (err, result) {
+    db.query(`SELECT * FROM employees`, function (err, result) {
         if (err) {
             console.log(err);
         }
 
         for (let i = 0; i < result.length; i++) {
-            managerArray.push(result[i].reporting_manager);
+            employeeArray.push(result[i].first_name + " " + result[i].last_name);
         }
+        employeeArray.push("null");
     });
 
     const questions = [
@@ -130,13 +131,14 @@ function addEmployee() {
             type: 'list',
             message: "Who is the employee's manager?",
             name: 'manager',
-            choices: managerArray
+            choices: employeeArray
         }
     ];
 
     inquirer
         .prompt(questions)
         .then((answer) => {
+            let managerId;
             let roleId;
 
             db.query(`SELECT * FROM roles`, function (err, result) {
@@ -149,15 +151,27 @@ function addEmployee() {
                         roleId = result[i].id;
                     }
                 }
-                const sql = "INSERT INTO employees (first_name, last_name, reporting_manager, role_id) VALUES (?, ?, ?, ?)";
-                const values = [answer.firstName, answer.lastName, answer.manager, roleId];
-
-                db.query(sql, values, function (err, result) {
+                db.query(`SELECT * FROM employees`, function (err, result) {
                     if (err) {
                         console.log(err);
                     }
-                    console.log(`Added ${answer.firstName} ${answer.lastName}to the database`);
-                    displayEmployees();
+
+                    for (let i = 0; i < result.length; i++) {
+                        if (answer.manager === result[i].first_name + " " + result[i].last_name) {
+                            managerId = result[i].id
+                        }
+                    }
+
+                    const sql = "INSERT INTO employees (first_name, last_name, reporting_manager_id, role_id) VALUES (?, ?, ?, ?)";
+                    const values = [answer.firstName, answer.lastName, managerId, roleId];
+
+                    db.query(sql, values, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(`Added ${answer.firstName} ${answer.lastName} to the database`);
+                        displayEmployees();
+                    });
                 });
             });
         });

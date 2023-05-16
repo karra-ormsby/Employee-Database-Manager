@@ -25,7 +25,7 @@ function displayRoles() {
 }
 
 function displayEmployees() {
-    db.query('SELECT employees.id, employees.first_name, employees.last_name, roles.job_title, departments.department_name, roles.salary, employees.reporting_manager FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.department_id = departments.id', function (err, result) {
+    db.query("SELECT employees.id, employees.first_name, employees.last_name, roles.job_title, departments.department_name, roles.salary, employees.reporting_manager_id FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.department_id = departments.id", function (err, result) {
         if (err) {
             console.log(err);
         }
