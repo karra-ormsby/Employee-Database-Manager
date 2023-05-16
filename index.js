@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const { displayDepartments, displayRoles, displayEmployees } = require('./utils/displayTable');
+const { displayDepartments, displayRoles, displayEmployees, displayBudget } = require('./utils/displayTable');
 const { addDepartment, addRole, addEmployee } = require('./utils/addToTable');
 const updateEmployee = require('./utils/updateTable');
 
@@ -9,7 +9,7 @@ function init() {
             type: 'list',
             message: 'What would you like to do?',
             name: 'initialise',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update Employee Role', 'Quit']
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update Employee Role', 'View Utilised Budget By Department', 'Quit']
         }
     ];
 
@@ -50,6 +50,11 @@ function init() {
                 case "Update Employee Role":
 
                     updateEmployee();
+
+                    break;
+                case "View Utilised Budget By Department":
+
+                    displayBudget();
 
                     break;
                 case "Quit":
