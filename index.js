@@ -10,7 +10,7 @@ function init() {
             type: 'list',
             message: 'What would you like to do?',
             name: 'initialise',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update Employee Role', 'View Utilised Budget By Department', 'Quit']
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update Employee Role', 'Delete Department', 'Delete Role', 'Delete Employee', 'View Utilised Budget By Department', 'Quit']
         }
     ];
     inquirer
@@ -55,6 +55,22 @@ function init() {
                 case "View Utilised Budget By Department":
 
                     displayBudget();
+
+                    break;
+                case 'Delete Department':
+
+                    deleteDepartment();
+
+                    break;
+
+                case 'Delete Role':
+
+                    deleteRole();
+
+                    break;
+                case 'Delete Employee':
+
+                    deleteEmployee();
 
                     break;
                 case "Quit":
@@ -401,6 +417,153 @@ function updateEmployee() {
             message: "What role do you want to assign to the selected employee?",
             name: 'role',
             choices: roleArray
+        }
+    ];
+}
+
+function deleteDepartment () {
+    let departmentArray = [];
+
+    db.query(`SELECT department_name FROM departments`, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+
+        for (let i = 0; i < result.length; i++) {
+            departmentArray.push(result[i].department_name);
+        }
+
+        inquirer
+            .prompt(questions)
+            .then((answer) => {
+                let departmentId;
+
+                db.query(`SELECT * FROM departments`, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                    }
+
+                    for (let i = 0; i < result.length; i++) {
+                        if (answer.department === result[i].department_name) {
+                            departmentId = result[i].id;
+                        }
+                    }
+
+                    db.query(`DELETE FROM departments WHERE id = ?`, departmentId, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(`Deleted ${answer} from the database`);
+                        displayDepartments();
+                    })
+                });
+            });
+    });
+
+    const questions = [
+        {
+            type: 'list',
+            message: "What is the name of the department you would like to delete?",
+            name: 'department',
+            choices: departmentArray
+        }
+    ];
+    
+}
+
+function deleteRole () {
+    let roleArray = [];
+
+    db.query(`SELECT job_title FROM roles`, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+
+        for (let i = 0; i < result.length; i++) {
+            roleArray.push(result[i].job_title);
+        }
+
+        inquirer
+            .prompt(questions)
+            .then((answer) => {
+                let roleId;
+
+                db.query(`SELECT * FROM roles`, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                    }
+
+                    for (let i = 0; i < result.length; i++) {
+                        if (answer.role === result[i].job_title) {
+                            roleId = result[i].id;
+                        }
+                    }
+
+                    db.query(`DELETE FROM roles WHERE id = ?`, roleId, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(`Deleted ${answer} from the database`);
+                        displayRoles();
+                    })
+                });
+            });
+    });
+
+    const questions = [
+        {
+            type: 'list',
+            message: "What is the name of the role you would like to delete?",
+            name: 'role',
+            choices: roleArray
+        }
+    ];
+}
+
+function deleteEmployee () {
+    let employeeArray = [];
+
+    db.query(`SELECT * FROM employees`, function (err, result) {
+        if (err) {
+            console.log(err);
+        }
+
+        for (let i = 0; i < result.length; i++) {
+            employeeArray.push(result[i].first_name + " " + result[i].last_name);
+        }
+        inquirer
+            .prompt(questions)
+            .then((answer) => {
+                let employeeId;
+
+                db.query(`SELECT * FROM employees`, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                    }
+
+                    for (let i = 0; i < result.length; i++) {
+                        if (answer.employee === result[i].first_name + " " + result[i].last_name) {
+                            employeeId = result[i].id
+                        }
+                    }
+
+                    db.query(`DELETE FROM employees WHERE id = ?`, employeeId, function (err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        console.log(`Deleted ${answer} from the database`);
+                        displayEmployees();
+                    })
+                });
+            });
+    });
+
+    const questions = [
+        {
+            type: 'list',
+            message: "What is the name of the employee you would like to delete?",
+            name: 'employee',
+            choices: employeeArray
         }
     ];
 }
